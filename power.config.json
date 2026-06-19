@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "appId": "96bd8a00-25cf-4399-b3d7-8f5279545cae",
+  "appDisplayName": "testin_code_apps",
+  "region": "prod",
+  "appType": "CodeApp",
+  "environmentId": "11ebcc63-eae8-e019-931d-a3be1b8955a2",
+  "description": " ",
+  "buildPath": "./dist",
+  "buildEntryPoint": "index.html",
+  "localAppUrl": "http://localhost:3000",
+  "logoPath": "Default",
+  "connectionReferences": {},
+  "databaseReferences": {
+    "default.cds": {
+      "dataSources": {
+        "prodordercomponent": {
+          "entitySetName": "dyn365bc_prodordercomponents_abk_prod_v1_0",
+          "logicalName": "dyn365bc_prodordercomponent_abk_prod_v1_0"
+        },
+        "productionorder": {
+          "entitySetName": "dyn365bc_productionorders_abk_prod_v1_0",
+          "logicalName": "dyn365bc_productionorder_abk_prod_v1_0"
+        }
+      },
+      "environmentVariableName": ""
+    }
+  }
+}

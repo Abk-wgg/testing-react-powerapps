@@ -1,0 +1,27 @@
+{
+  "id": "87031abe-e15b-4c92-87e1-c23783b1f3a3",
+  "name": "ABK Prod Data API",
+  "publisher": "ABK",
+  "version": "1.0.0.0",
+  "brief": "Exposes Production Order (5405) and Prod. Order Component (5407) as API pages for Dataverse virtual tables.",
+  "description": "Custom API pages over the standard 'Production Order' and 'Prod. Order Component' tables so production/manufacturing data can be surfaced as Business Central Dataverse virtual tables and consumed by a Power Apps code app.",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "24.0.0.0",
+  "application": "24.0.0.0",
+  "idRanges": [
+    {
+      "from": 51100,
+      "to": 51149
+    }
+  ],
+  "runtime": "13.0",
+  "features": [
+    "NoImplicitWith"
+  ]
+}

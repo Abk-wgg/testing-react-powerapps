@@ -1,0 +1,7 @@
+# AL build output
+*.app
+.alpackages/
+.alcache/
+.snapshots/
+rad.json
+launch.json

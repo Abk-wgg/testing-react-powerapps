@@ -1,0 +1,282 @@
+{
+  "name": "dyn365bc_productionorder_abk_prod_v1_0",
+  "title": "productionOrder",
+  "schema": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "x-ms-dataverse-entity": true,
+      "x-ms-dataverse-entityset": "dyn365bc_productionorders_abk_prod_v1_0",
+      "x-ms-dataverse-primary-id": "dyn365bc_productionorder_abk_prod_v1_0id",
+      "x-ms-dataverse-primary-name": "dyn365bc_no",
+      "properties": {
+        "dyn365bc_assigneduserid": {
+          "type": "string",
+          "title": "assignedUserId",
+          "x-ms-dataverse-attribute": "dyn365bc_assigneduserid",
+          "x-ms-dataverse-type": "StringType",
+          "x-ms-schema-name": "dyn365bc_assigneduserid",
+          "maxLength": 50
+        },
+        "dyn365bc_bincode": {
+          "type": "string",
+          "title": "binCode",
+          "x-ms-dataverse-attribute": "dyn365bc_bincode",
+          "x-ms-dataverse-type": "StringType",
+          "x-ms-schema-name": "dyn365bc_bincode",
+          "maxLength": 20
+        },
+        "dyn365bc_companylookup_code": {
+          "type": "string",
+          "title": "Company Code",
+          "x-ms-dataverse-attribute": "dyn365bc_companylookup_code",
+          "x-ms-dataverse-type": "StringType",
+          "x-ms-schema-name": "dyn365bc_companylookup_code",
+          "maxLength": 30
+        },
+        "dyn365bc_companylookup_id": {
+          "type": "string",
+          "title": "Company",
+          "x-ms-dataverse-attribute": "dyn365bc_companylookup_id",
+          "x-ms-dataverse-type": "LookupType",
+          "x-ms-schema-name": "dyn365bc_companylookup_id",
+          "required": true
+        },
+        "dyn365bc_companylookup_idname": {
+          "type": "string",
+          "title": "dyn365bc_companylookup_idname",
+          "x-ms-dataverse-attribute": "dyn365bc_companylookup_idname",
+          "x-ms-dataverse-type": "StringType",
+          "x-ms-schema-name": "dyn365bc_companylookup_idName",
+          "x-ms-read-only": true,
+          "maxLength": 30
+        },
+        "dyn365bc_creationdate": {
+          "type": "string",
+          "title": "creationDate",
+          "x-ms-dataverse-attribute": "dyn365bc_creationdate",
+          "x-ms-dataverse-type": "DateTimeType",
+          "x-ms-schema-name": "dyn365bc_creationdate"
+        },
+        "dyn365bc_description": {
+          "type": "string",
+          "title": "description",
+          "x-ms-dataverse-attribute": "dyn365bc_description",
+          "x-ms-dataverse-type": "StringType",
+          "x-ms-schema-name": "dyn365bc_description",
+          "maxLength": 100
+        },
+        "dyn365bc_duedate": {
+          "type": "string",
+          "title": "dueDate",
+          "x-ms-dataverse-attribute": "dyn365bc_duedate",
+          "x-ms-dataverse-type": "DateTimeType",
+          "x-ms-schema-name": "dyn365bc_duedate"
+        },
+        "dyn365bc_endingdate": {
+          "type": "string",
+          "title": "endingDate",
+          "x-ms-dataverse-attribute": "dyn365bc_endingdate",
+          "x-ms-dataverse-type": "DateTimeType",
+          "x-ms-schema-name": "dyn365bc_endingdate"
+        },
+        "dyn365bc_endingtime": {
+          "type": "string",
+          "title": "endingTime",
+          "x-ms-dataverse-attribute": "dyn365bc_endingtime",
+          "x-ms-dataverse-type": "StringType",
+          "x-ms-schema-name": "dyn365bc_endingtime",
+          "maxLength": 120
+        },
+        "dyn365bc_finisheddate": {
+          "type": "string",
+          "title": "finishedDate",
+          "x-ms-dataverse-attribute": "dyn365bc_finisheddate",
+          "x-ms-dataverse-type": "DateTimeType",
+          "x-ms-schema-name": "dyn365bc_finisheddate"
+        },
+        "dyn365bc_genprodpostinggroup": {
+          "type": "string",
+          "title": "genProdPostingGroup",
+          "x-ms-dataverse-attribute": "dyn365bc_genprodpostinggroup",
+          "x-ms-dataverse-type": "StringType",
+          "x-ms-schema-name": "dyn365bc_genprodpostinggroup",
+          "maxLength": 20
+        },
+        "dyn365bc_inventorypostinggroup": {
+          "type": "string",
+          "title": "inventoryPostingGroup",
+          "x-ms-dataverse-attribute": "dyn365bc_inventorypostinggroup",
+          "x-ms-dataverse-type": "StringType",
+          "x-ms-schema-name": "dyn365bc_inventorypostinggroup",
+          "maxLength": 20
+        },
+        "dyn365bc_lastdatemodified": {
+          "type": "string",
+          "title": "lastDateModified",
+          "x-ms-dataverse-attribute": "dyn365bc_lastdatemodified",
+          "x-ms-dataverse-type": "DateTimeType",
+          "x-ms-schema-name": "dyn365bc_lastdatemodified"
+        },
+        "dyn365bc_locationcode": {
+          "type": "string",
+          "title": "locationCode",
+          "x-ms-dataverse-attribute": "dyn365bc_locationcode",
+          "x-ms-dataverse-type": "StringType",
+          "x-ms-schema-name": "dyn365bc_locationcode",
+          "maxLength": 10
+        },
+        "dyn365bc_lowlevelcode": {
+          "type": "string",
+          "title": "lowLevelCode",
+          "x-ms-dataverse-attribute": "dyn365bc_lowlevelcode",
+          "x-ms-dataverse-type": "IntegerType",
+          "x-ms-schema-name": "dyn365bc_lowlevelcode"
+        },
+        "dyn365bc_no": {
+          "type": "string",
+          "title": "no",
+          "x-ms-dataverse-attribute": "dyn365bc_no",
+          "x-ms-dataverse-type": "StringType",
+          "x-ms-schema-name": "dyn365bc_no",
+          "x-ms-dataverse-primary-name": true,
+          "maxLength": 20
+        },
+        "dyn365bc_productionorder_abk_prod_v1_0id": {
+          "type": "string",
+          "title": "systemId",
+          "x-ms-dataverse-attribute": "dyn365bc_productionorder_abk_prod_v1_0id",
+          "x-ms-dataverse-type": "UniqueidentifierType",
+          "x-ms-schema-name": "dyn365bc_productionorder_abk_prod_v1_0Id",
+          "x-ms-dataverse-primary-id": true,
+          "required": true,
+          "x-ms-keyType": "primary"
+        },
+        "dyn365bc_quantity": {
+          "type": "string",
+          "title": "quantity",
+          "x-ms-dataverse-attribute": "dyn365bc_quantity",
+          "x-ms-dataverse-type": "DecimalType",
+          "x-ms-schema-name": "dyn365bc_quantity"
+        },
+        "dyn365bc_routingno": {
+          "type": "string",
+          "title": "routingNo",
+          "x-ms-dataverse-attribute": "dyn365bc_routingno",
+          "x-ms-dataverse-type": "StringType",
+          "x-ms-schema-name": "dyn365bc_routingno",
+          "maxLength": 20
+        },
+        "dyn365bc_searchdescription": {
+          "type": "string",
+          "title": "searchDescription",
+          "x-ms-dataverse-attribute": "dyn365bc_searchdescription",
+          "x-ms-dataverse-type": "StringType",
+          "x-ms-schema-name": "dyn365bc_searchdescription",
+          "maxLength": 100
+        },
+        "dyn365bc_sourceno": {
+          "type": "string",
+          "title": "sourceNo",
+          "x-ms-dataverse-attribute": "dyn365bc_sourceno",
+          "x-ms-dataverse-type": "StringType",
+          "x-ms-schema-name": "dyn365bc_sourceno",
+          "maxLength": 20
+        },
+        "dyn365bc_sourcetype": {
+          "type": "string",
+          "title": "sourceType",
+          "x-ms-dataverse-attribute": "dyn365bc_sourcetype",
+          "x-ms-dataverse-type": "PicklistType",
+          "x-ms-schema-name": "dyn365bc_sourcetype",
+          "enum": [
+            "Item",
+            "Family",
+            "Sales Header"
+          ],
+          "x-ms-enum-values": [
+            200000000,
+            200000001,
+            200000002
+          ],
+          "Color": [
+            null,
+            null,
+            null
+          ],
+          "x-ms-optionsetmetadataid": "9bac226b-2d6c-f111-ab0f-002248c8beff",
+          "x-ms-isGlobal": true,
+          "x-ms-optionsetdisplayname": "dyn365bc_prodordersourcetype_abk_prod_v1_0",
+          "x-ms-optionSetType": "Picklist"
+        },
+        "dyn365bc_sourcetypename": {
+          "type": "string",
+          "title": "dyn365bc_sourcetypename",
+          "x-ms-dataverse-attribute": "dyn365bc_sourcetypename",
+          "x-ms-dataverse-type": "VirtualType",
+          "x-ms-schema-name": "dyn365bc_sourcetypeName",
+          "x-ms-read-only": true
+        },
+        "dyn365bc_startingdate": {
+          "type": "string",
+          "title": "startingDate",
+          "x-ms-dataverse-attribute": "dyn365bc_startingdate",
+          "x-ms-dataverse-type": "DateTimeType",
+          "x-ms-schema-name": "dyn365bc_startingdate"
+        },
+        "dyn365bc_startingtime": {
+          "type": "string",
+          "title": "startingTime",
+          "x-ms-dataverse-attribute": "dyn365bc_startingtime",
+          "x-ms-dataverse-type": "StringType",
+          "x-ms-schema-name": "dyn365bc_startingtime",
+          "maxLength": 120
+        },
+        "dyn365bc_status": {
+          "type": "string",
+          "title": "status",
+          "x-ms-dataverse-attribute": "dyn365bc_status",
+          "x-ms-dataverse-type": "PicklistType",
+          "x-ms-schema-name": "dyn365bc_status",
+          "enum": [
+            "Simulated",
+            "Planned",
+            "Firm Planned",
+            "Released",
+            "Finished"
+          ],
+          "x-ms-enum-values": [
+            200000000,
+            200000001,
+            200000002,
+            200000003,
+            200000004
+          ],
+          "Color": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "x-ms-optionsetmetadataid": "e3c3c017-2a6c-f111-ab0f-002248c8b13d",
+          "x-ms-isGlobal": true,
+          "x-ms-optionsetdisplayname": "dyn365bc_productionorderstatus_abk_prod_v1_0",
+          "x-ms-optionSetType": "Picklist"
+        },
+        "dyn365bc_statusname": {
+          "type": "string",
+          "title": "dyn365bc_statusname",
+          "x-ms-dataverse-attribute": "dyn365bc_statusname",
+          "x-ms-dataverse-type": "VirtualType",
+          "x-ms-schema-name": "dyn365bc_statusName",
+          "x-ms-read-only": true
+        }
+      },
+      "required": [
+        "dyn365bc_companylookup_id",
+        "dyn365bc_productionorder_abk_prod_v1_0id"
+      ]
+    }
+  }
+}
