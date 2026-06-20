@@ -2,8 +2,7 @@ import { useMemo, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { format, parseISO } from "date-fns"
-import { ArrowDown, ArrowUp, ChevronsUpDown, Download } from "lucide-react"
-import { exportRowsToExcel } from "@/lib/export-excel"
+import { ArrowDown, ArrowUp, ChevronsUpDown, Download, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -38,6 +37,13 @@ function optionLabel(
   if (name) return name
   if (code == null) return ""
   return labels[code] ?? String(code)
+}
+
+function isReleased(row: ProdOrderComponent): boolean {
+  return (
+    optionLabel(row.dyn365bc_statusname, row.dyn365bc_status, STATUS_LABELS).toLowerCase() ===
+    "released"
+  )
 }
 
 type Column = {
@@ -98,6 +104,7 @@ export default function ProdDataPage() {
   const [filter, setFilter] = useState(searchParams.get("prodOrder") ?? "")
   const [columnFilters, setColumnFilters] = useState<Record<string, string>>({})
   const [sort, setSort] = useState<SortState | null>(null)
+  const [releasedOnly, setReleasedOnly] = useState(true)
 
   // Routing lines give us the work center per order (excluding "PRINTING").
   const routingQuery = useQuery({
@@ -121,8 +128,8 @@ export default function ProdDataPage() {
   const filteredRows = useMemo(() => {
     const q = filter.trim().toLowerCase()
     const active = Object.entries(columnFilters).filter(([, v]) => v.trim() !== "")
-    if (!q && active.length === 0) return rows
     return rows.filter((row) => {
+      if (releasedOnly && !isReleased(row)) return false
       if (q && !COLUMNS.some((c) => cellText(c, row).toLowerCase().includes(q))) {
         return false
       }
@@ -132,7 +139,7 @@ export default function ProdDataPage() {
         return cellText(col, row).toLowerCase().includes(v.trim().toLowerCase())
       })
     })
-  }, [rows, filter, columnFilters])
+  }, [rows, filter, columnFilters, releasedOnly])
 
   const sortedRows = useMemo(() => {
     if (sort) {
@@ -158,8 +165,26 @@ export default function ProdDataPage() {
 
   const hasColumnFilters = Object.values(columnFilters).some((v) => v.trim() !== "")
 
+  // Band by production order: every row of the same order shares a colour, and
+  // the colour alternates each time a new order appears in the displayed list.
+  const bandByOrder = useMemo(() => {
+    const map = new Map<string, number>()
+    let band = 0
+    for (const row of sortedRows) {
+      const key = row.dyn365bc_prodorderno ?? ""
+      if (!map.has(key)) {
+        map.set(key, band % 2)
+        band++
+      }
+    }
+    return map
+  }, [sortedRows])
+
   function rowClass(row: ProdOrderComponent): string {
-    return isRtv(row) ? "bg-primary/15 hover:bg-primary/25" : ""
+    if (isRtv(row)) return "bg-primary/15 hover:bg-primary/25"
+    return (bandByOrder.get(row.dyn365bc_prodorderno ?? "") ?? 0) === 1
+      ? "bg-foreground/[0.06]"
+      : "bg-transparent"
   }
 
   function toggleSort(key: keyof ProdOrderComponent) {
@@ -179,18 +204,17 @@ export default function ProdDataPage() {
         </div>
         <div className="flex items-center gap-2">
           <Button
+            variant={releasedOnly ? "default" : "outline"}
+            size="sm"
+            onClick={() => setReleasedOnly((v) => !v)}
+          >
+            {releasedOnly ? "Released only" : "With finished"}
+          </Button>
+          <Button
             variant="outline"
             size="sm"
-            disabled={sortedRows.length === 0}
-            onClick={() =>
-              exportRowsToExcel(
-                "component-list",
-                "Component list",
-                COLUMNS,
-                sortedRows,
-                cellText,
-              )
-            }
+            disabled
+            title="Excel export is temporarily disabled"
           >
             <Download className="size-4" />
             Export to Excel
@@ -222,12 +246,24 @@ export default function ProdDataPage() {
                 Clear column filters
               </Button>
             )}
-            <Input
-              placeholder="Filter all columns…"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="w-[260px]"
-            />
+            <div className="relative w-[260px]">
+              <Input
+                placeholder="Filter all columns…"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                className="w-full pr-8"
+              />
+              {filter && (
+                <button
+                  type="button"
+                  onClick={() => setFilter("")}
+                  title="Clear filter"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-sm p-0.5 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="size-4" />
+                </button>
+              )}
+            </div>
           </div>
         </CardHeader>
         <CardContent className="flex-1 overflow-auto [&_[data-slot=table-container]]:overflow-visible">
@@ -263,12 +299,12 @@ export default function ProdDataPage() {
                       return (
                         <TableHead
                           key={String(c.key)}
-                          className={`p-0 ${c.narrow ? "w-14" : c.width ?? ""}`}
+                          className={`p-0 border-b-2 border-primary/60 bg-primary/15 ${c.narrow ? "w-14" : c.width ?? ""}`}
                         >
                           <button
                             type="button"
                             onClick={() => toggleSort(c.key)}
-                            className="flex w-full min-w-0 items-center gap-1 px-2 py-2 text-left font-medium hover:text-foreground"
+                            className="flex w-full min-w-0 items-center gap-1 px-2 py-2 text-left text-xs font-semibold uppercase tracking-wide text-primary hover:brightness-110"
                           >
                             <span className="break-words">{c.label}</span>
                             {active ? (

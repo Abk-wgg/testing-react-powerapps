@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { format, parseISO, startOfDay } from "date-fns"
-import { CalendarIcon, ChevronLeft, ChevronRight, X } from "lucide-react"
+import { CalendarIcon, Check, ChevronLeft, ChevronRight, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -105,6 +105,7 @@ export default function SchedulePage() {
   const [fromDate, setFromDate] = useState<Date | undefined>(undefined)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [dayIndex, setDayIndex] = useState(0)
+  const [releasedOnly, setReleasedOnly] = useState(true)
 
   // Measure the fixed header (nav + this page's sticky bar) so the work-center
   // column headers can stick right below it instead of sliding under and hiding.
@@ -166,7 +167,7 @@ export default function SchedulePage() {
   const visibleOrders = useMemo(() => {
     const from = fromDate ? startOfDay(fromDate).getTime() : null
     return orders.filter((o) => {
-      if (statusLabel(o).toLowerCase() === "finished") return false
+      if (releasedOnly && statusLabel(o).toLowerCase() !== "released") return false
       if (category && !orderHasCategory(o.dyn365bc_workcenter, category)) return false
       if (from !== null) {
         const due = parseDate(o.dyn365bc_duedate)
@@ -175,7 +176,7 @@ export default function SchedulePage() {
       }
       return true
     })
-  }, [orders, category, fromDate])
+  }, [orders, category, fromDate, releasedOnly])
 
   // Group orders by due-date day, sorted ascending (undated last).
   const days = useMemo<DayGroup[]>(() => {
@@ -279,16 +280,25 @@ export default function SchedulePage() {
             </Button>
           </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            ordersQuery.refetch()
-            routingQuery.refetch()
-          }}
-        >
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant={releasedOnly ? "default" : "outline"}
+            size="sm"
+            onClick={() => setReleasedOnly((v) => !v)}
+          >
+            {releasedOnly ? "Released only" : "With finished"}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              ordersQuery.refetch()
+              routingQuery.refetch()
+            }}
+          >
+            Refresh
+          </Button>
+        </div>
         </div>
 
         {currentDay && (
@@ -426,7 +436,7 @@ function DayCard({
   }, [day.orders, category])
 
   return (
-    <Card className="animate-in fade-in slide-in-from-bottom-1 duration-300">
+    <Card className="shadow-2xl shadow-black/60 animate-in fade-in slide-in-from-bottom-1 duration-300">
       <CardContent className="pt-6">
         {/* Scrolls inside the card (both axes), sized to the remaining viewport so
             the page itself doesn't scroll and the column headers stay pinned. */}
@@ -471,6 +481,10 @@ function DayCard({
   )
 }
 
+function isRtvComponent(c: Component): boolean {
+  return (c.dyn365bc_itemno ?? "").toUpperCase().startsWith("RTV")
+}
+
 function OrderCard({
   order,
   components,
@@ -480,17 +494,31 @@ function OrderCard({
   components: Component[]
   style: LocationStyle
 }) {
+  // RTV components first, like the Component list.
+  const sortedComponents = [...components].sort(
+    (a, b) => (isRtvComponent(a) ? 0 : 1) - (isRtvComponent(b) ? 0 : 1),
+  )
+  const finished = statusLabel(order).toLowerCase() === "finished"
+
   return (
     <div
-      className={`rounded-md border border-l-4 p-3 space-y-1.5 text-sm transition-[filter] hover:brightness-110 ${style.accent}`}
+      className={`rounded-md border border-l-4 p-3 space-y-1.5 text-sm shadow-md shadow-black/30 transition-[filter] hover:brightness-110 ${style.accent}`}
     >
-      <div>
+      <div className="flex items-center justify-between gap-2">
         <Link
           to={`/prod-data?prodOrder=${encodeURIComponent(order.dyn365bc_no ?? "")}`}
-          className="text-primary font-medium underline-offset-4 hover:underline truncate"
+          className="text-foreground font-semibold underline-offset-4 hover:underline truncate"
         >
           {order.dyn365bc_no}
         </Link>
+        {finished && (
+          <span
+            className="flex size-5 shrink-0 items-center justify-center rounded-full bg-card text-[#e2615f] ring-2 ring-[#e2615f]"
+            title="Finished"
+          >
+            <Check className="size-3.5" strokeWidth={3} />
+          </span>
+        )}
       </div>
       {order.dyn365bc_description && (
         <p className="text-muted-foreground line-clamp-2">{order.dyn365bc_description}</p>
@@ -507,10 +535,14 @@ function OrderCard({
           <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
             Components ({components.length})
           </p>
-          {components.map((c) => (
+          {sortedComponents.map((c) => (
             <div
               key={c.dyn365bc_prodordercomponent_abk_prod_v1_0id}
-              className="rounded bg-background/40 px-1.5 py-1 text-xs"
+              className={`rounded px-1.5 py-1 text-xs ${
+                isRtvComponent(c)
+                  ? "bg-[#5ec8d0]/25 ring-1 ring-[#5ec8d0]/60"
+                  : "bg-background/40"
+              }`}
             >
               <div className="font-medium break-words">{c.dyn365bc_itemno}</div>
               <div>
@@ -522,7 +554,13 @@ function OrderCard({
                 </span>
               </div>
               {c.dyn365bc_description && (
-                <p className="text-muted-foreground line-clamp-2">{c.dyn365bc_description}</p>
+                <p
+                  className={`line-clamp-2 ${
+                    isRtvComponent(c) ? "text-foreground/90" : "text-muted-foreground"
+                  }`}
+                >
+                  {c.dyn365bc_description}
+                </p>
               )}
             </div>
           ))}
