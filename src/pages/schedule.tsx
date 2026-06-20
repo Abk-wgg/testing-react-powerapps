@@ -201,15 +201,15 @@ export default function SchedulePage() {
   const currentDay = days[currentIndex]
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-4 sm:p-6 space-y-4">
       <div
         ref={headerRef}
-        className="sticky top-14 z-20 -mx-6 -mt-6 px-6 pt-6 pb-4 space-y-3 bg-background/95 backdrop-blur-sm border-b"
+        className="sticky top-14 z-20 -mx-4 sm:-mx-6 -mt-4 sm:-mt-6 px-4 sm:px-6 pt-4 sm:pt-6 pb-4 space-y-3 bg-background/95 backdrop-blur-sm border-b"
       >
-        <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4 flex-wrap">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
           <div>
-            <h1 className="text-2xl font-semibold">Schedule</h1>
+            <h1 className="text-xl sm:text-2xl font-semibold">Schedule</h1>
             <p className="text-sm text-muted-foreground">
               Production orders by due date, grouped by work center
             </p>
@@ -280,7 +280,7 @@ export default function SchedulePage() {
             </Button>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             variant={releasedOnly ? "default" : "outline"}
             size="sm"
@@ -302,23 +302,23 @@ export default function SchedulePage() {
         </div>
 
         {currentDay && (
-          <div className="flex items-center justify-center gap-6">
+          <div className="flex items-center justify-center gap-3 sm:gap-6">
             <Button
               variant="outline"
               size="icon"
               disabled={currentIndex === 0}
               onClick={() => setDayIndex(currentIndex - 1)}
               aria-label="Previous day"
-              className="size-12 border-[#7fa6c9]/60 text-[#7fa6c9] hover:bg-[#7fa6c9]/15 hover:text-[#7fa6c9]"
+              className="size-10 sm:size-12 shrink-0 border-[#7fa6c9]/60 text-[#7fa6c9] hover:bg-[#7fa6c9]/15 hover:text-[#7fa6c9]"
             >
-              <ChevronLeft className="size-7" />
+              <ChevronLeft className="size-6 sm:size-7" />
             </Button>
 
             <div className="flex flex-col items-center text-center">
-              <span className="text-3xl font-bold tracking-tight">
+              <span className="text-2xl sm:text-3xl font-bold tracking-tight">
                 {currentDay.date ? format(currentDay.date, "dd MMM yyyy") : "No due date"}
               </span>
-              <span className="text-lg font-bold text-muted-foreground mt-0.5">
+              <span className="text-base sm:text-lg font-bold text-muted-foreground mt-0.5">
                 {currentDay.date ? format(currentDay.date, "EEEE") : "Unscheduled"}
               </span>
               <div className="mt-1 flex items-center gap-2">
@@ -335,9 +335,9 @@ export default function SchedulePage() {
               disabled={currentIndex === days.length - 1}
               onClick={() => setDayIndex(currentIndex + 1)}
               aria-label="Next day"
-              className="size-12 border-[#8fcf9b]/60 text-[#8fcf9b] hover:bg-[#8fcf9b]/15 hover:text-[#8fcf9b]"
+              className="size-10 sm:size-12 shrink-0 border-[#8fcf9b]/60 text-[#8fcf9b] hover:bg-[#8fcf9b]/15 hover:text-[#8fcf9b]"
             >
-              <ChevronRight className="size-7" />
+              <ChevronRight className="size-6 sm:size-7" />
             </Button>
           </div>
         )}
@@ -445,7 +445,7 @@ function DayCard({
           style={{ maxHeight: `calc(100dvh - ${stickyTop + 40}px)` }}
         >
           {columns.map(({ wc, orders, category }) => (
-            <div key={wc} className="w-[284px] shrink-0 px-4 first:pl-0 last:pr-0">
+            <div key={wc} className="w-[80vw] max-w-[284px] sm:w-[284px] shrink-0 px-3 sm:px-4 first:pl-0 last:pr-0">
               {/* Sticky header: opaque card backdrop so rows pass behind it. */}
               <div className="sticky top-0 z-10 bg-card pb-2">
                 <div
@@ -485,6 +485,66 @@ function isRtvComponent(c: Component): boolean {
   return (c.dyn365bc_itemno ?? "").toUpperCase().startsWith("RTV")
 }
 
+// The "Finished" tick badge, shown next to the order number.
+function FinishedBadge() {
+  return (
+    <span
+      className="flex size-5 shrink-0 items-center justify-center rounded-full bg-card text-[#e2615f] ring-2 ring-[#e2615f]"
+      title="Finished"
+    >
+      <Check className="size-3.5" strokeWidth={3} />
+    </span>
+  )
+}
+
+// The list of components for an order. `clamp` keeps descriptions to two lines
+// for the compact card; the full-screen view shows them in full.
+function ComponentsList({
+  components,
+  clamp = true,
+}: {
+  components: Component[]
+  clamp?: boolean
+}) {
+  // RTV components first, like the Component list.
+  const sorted = [...components].sort(
+    (a, b) => (isRtvComponent(a) ? 0 : 1) - (isRtvComponent(b) ? 0 : 1),
+  )
+  return (
+    <div className="space-y-1.5">
+      {sorted.map((c) => (
+        <div
+          key={c.dyn365bc_prodordercomponent_abk_prod_v1_0id}
+          className={`rounded px-1.5 py-1 text-xs ${
+            isRtvComponent(c)
+              ? "bg-[#5ec8d0]/25 ring-1 ring-[#5ec8d0]/60"
+              : "bg-background/40"
+          }`}
+        >
+          <div className="font-medium break-words">{c.dyn365bc_itemno}</div>
+          <div>
+            <span className="text-sm font-bold">
+              {(c.dyn365bc_remainingquantity ?? 0).toLocaleString("en-US")}
+            </span>{" "}
+            <span className="text-foreground/80">
+              {c.dyn365bc_unitofmeasurecode ?? ""}
+            </span>
+          </div>
+          {c.dyn365bc_description && (
+            <p
+              className={`${clamp ? "line-clamp-2" : "break-words"} ${
+                isRtvComponent(c) ? "text-foreground/90" : "text-muted-foreground"
+              }`}
+            >
+              {c.dyn365bc_description}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function OrderCard({
   order,
   components,
@@ -494,11 +554,9 @@ function OrderCard({
   components: Component[]
   style: LocationStyle
 }) {
-  // RTV components first, like the Component list.
-  const sortedComponents = [...components].sort(
-    (a, b) => (isRtvComponent(a) ? 0 : 1) - (isRtvComponent(b) ? 0 : 1),
-  )
   const finished = statusLabel(order).toLowerCase() === "finished"
+  const hasComponents = components.length > 0
+  const [open, setOpen] = useState(false)
 
   return (
     <div
@@ -511,14 +569,7 @@ function OrderCard({
         >
           {order.dyn365bc_no}
         </Link>
-        {finished && (
-          <span
-            className="flex size-5 shrink-0 items-center justify-center rounded-full bg-card text-[#e2615f] ring-2 ring-[#e2615f]"
-            title="Finished"
-          >
-            <Check className="size-3.5" strokeWidth={3} />
-          </span>
-        )}
+        {finished && <FinishedBadge />}
       </div>
       {order.dyn365bc_description && (
         <p className="text-muted-foreground line-clamp-2">{order.dyn365bc_description}</p>
@@ -530,40 +581,66 @@ function OrderCard({
         {order.dyn365bc_locationcode && <span>{order.dyn365bc_locationcode}</span>}
       </div>
 
-      {components.length > 0 && (
-        <div className="mt-1 border-t border-border/60 pt-1.5 space-y-1.5">
-          <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-            Components ({components.length})
-          </p>
-          {sortedComponents.map((c) => (
-            <div
-              key={c.dyn365bc_prodordercomponent_abk_prod_v1_0id}
-              className={`rounded px-1.5 py-1 text-xs ${
-                isRtvComponent(c)
-                  ? "bg-[#5ec8d0]/25 ring-1 ring-[#5ec8d0]/60"
-                  : "bg-background/40"
-              }`}
-            >
-              <div className="font-medium break-words">{c.dyn365bc_itemno}</div>
-              <div>
-                <span className="text-sm font-bold">
-                  {(c.dyn365bc_remainingquantity ?? 0).toLocaleString("en-US")}
-                </span>{" "}
-                <span className="text-foreground/80">
-                  {c.dyn365bc_unitofmeasurecode ?? ""}
-                </span>
+      {hasComponents && (
+        <>
+          {/* Mobile: a tappable summary that opens the order full-screen. */}
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="lg:hidden mt-1 flex w-full items-center justify-between gap-2 border-t border-border/60 pt-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground hover:text-foreground"
+          >
+            <span>Components ({components.length})</span>
+            <ChevronRight className="size-4 shrink-0" />
+          </button>
+
+          {/* Desktop: components inline on the card. */}
+          <div className="hidden lg:block mt-1 border-t border-border/60 pt-1.5 space-y-1.5">
+            <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              Components ({components.length})
+            </p>
+            <ComponentsList components={components} />
+          </div>
+        </>
+      )}
+
+      {/* Full-screen order view (mobile only). */}
+      {open && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-background lg:hidden">
+          <div className="sticky top-0 z-10 flex items-start justify-between gap-2 border-b bg-card px-4 py-3">
+            <div className="min-w-0 space-y-0.5">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold truncate">{order.dyn365bc_no}</span>
+                {finished && <FinishedBadge />}
               </div>
-              {c.dyn365bc_description && (
-                <p
-                  className={`line-clamp-2 ${
-                    isRtvComponent(c) ? "text-foreground/90" : "text-muted-foreground"
-                  }`}
-                >
-                  {c.dyn365bc_description}
-                </p>
+              {order.dyn365bc_locationcode && (
+                <span className="text-xs text-muted-foreground">
+                  {order.dyn365bc_locationcode}
+                </span>
               )}
             </div>
-          ))}
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Close"
+              className="shrink-0 rounded-md p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
+            >
+              <X className="size-5" />
+            </button>
+          </div>
+          <div className="flex-1 overflow-auto p-4 space-y-3">
+            {order.dyn365bc_description && (
+              <p className="text-sm text-muted-foreground">{order.dyn365bc_description}</p>
+            )}
+            <p className="text-base font-bold">
+              Qty {(order.dyn365bc_quantity ?? 0).toLocaleString("en-US")}
+            </p>
+            <div>
+              <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                Components ({components.length})
+              </p>
+              <ComponentsList components={components} clamp={false} />
+            </div>
+          </div>
         </div>
       )}
     </div>

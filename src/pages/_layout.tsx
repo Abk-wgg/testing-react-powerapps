@@ -3,7 +3,8 @@ import { Outlet, NavLink, useLocation } from "react-router-dom"
 
 type LayoutProps = { showHeader?: boolean }
 
-const NAV_BASE = "rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
+const NAV_BASE =
+  "rounded-md px-2.5 sm:px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors"
 
 // Each nav button is tinted with its page's accent.
 function navStyle(accent: string) {
@@ -46,8 +47,8 @@ export default function Layout({ showHeader = true }: LayoutProps) {
     <div className="min-h-dvh flex flex-col">
       {showHeader && (
         <header className="sticky top-0 z-30 h-14 border-b bg-card/80 backdrop-blur-sm flex items-center">
-          <div className="w-full px-6 flex items-center justify-between">
-            <nav className="flex items-center gap-1">
+          <div className="w-full px-4 sm:px-6 flex items-center justify-between">
+            <nav className="flex items-center gap-1 overflow-x-auto">
               <NavLink to="/" end className={NAV_BASE} style={navStyle("#c9ada7")}>
                 Production orders
               </NavLink>

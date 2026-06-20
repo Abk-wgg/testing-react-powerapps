@@ -196,13 +196,13 @@ export default function ProdDataPage() {
   }
 
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex items-center justify-between gap-4">
+    <div className="p-4 sm:p-6 space-y-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Component list</h1>
-         
+          <h1 className="text-xl sm:text-2xl font-semibold">Component list</h1>
+
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             variant={releasedOnly ? "default" : "outline"}
             size="sm"
@@ -226,7 +226,7 @@ export default function ProdDataPage() {
       </div>
 
       <Card className="h-[78vh] flex flex-col">
-        <CardHeader className="pb-3 flex-row items-center justify-between gap-4 space-y-0">
+        <CardHeader className="pb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:space-y-0">
           <CardTitle className="text-base flex items-center gap-2">
             Rows
             {query.data && (
@@ -246,7 +246,7 @@ export default function ProdDataPage() {
                 Clear column filters
               </Button>
             )}
-            <div className="relative w-[260px]">
+            <div className="relative w-full sm:w-[260px]">
               <Input
                 placeholder="Filter all columns…"
                 value={filter}
@@ -291,7 +291,7 @@ export default function ProdDataPage() {
             (rows.length === 0 ? (
               <p className="text-sm text-muted-foreground">No rows returned.</p>
             ) : (
-              <Table className="w-full table-fixed">
+              <Table className="w-full table-auto lg:table-fixed">
                 <TableHeader className="sticky top-0 z-10 bg-card">
                   <TableRow>
                     {COLUMNS.map((c) => {
@@ -351,7 +351,7 @@ export default function ProdDataPage() {
                       {COLUMNS.map((c) => (
                         <TableCell
                           key={String(c.key)}
-                          className="whitespace-normal break-words align-top"
+                          className="align-top whitespace-nowrap lg:whitespace-normal lg:break-words"
                         >
                           {c.key === "dyn365bc_prodorderno" ? (
                             <Link
