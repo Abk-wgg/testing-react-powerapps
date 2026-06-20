@@ -21,6 +21,10 @@
         "productionorder": {
           "entitySetName": "dyn365bc_productionorders_abk_prod_v1_0",
           "logicalName": "dyn365bc_productionorder_abk_prod_v1_0"
+        },
+        "prodorderroutingline": {
+          "entitySetName": "dyn365bc_prodorderroutinglines_abk_prod_v1_0",
+          "logicalName": "dyn365bc_prodorderroutingline_abk_prod_v1_0"
         }
       },
       "environmentVariableName": ""

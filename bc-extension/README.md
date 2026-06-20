@@ -11,6 +11,7 @@ only way to get it as a virtual table is a custom API page like this one.
 - `app.json` — extension manifest (id, publisher `ABK`, object range 51100–51149).
 - `src/ProdOrderComponentApi.Page.al` — API page (page 51100) over table 5407 "Prod. Order Component".
 - `src/ProductionOrderApi.Page.al` — API page (page 51101) over table 5405 "Production Order" (header).
+- `src/ProdOrderRoutingLineApi.Page.al` — API page (page 51103) over table 5410 "Prod. Order Routing Line" (operations / work centers).
 
 ## Before you publish
 1. **Match the fields to your data.** The `field(...)` list mirrors the columns the

@@ -12,6 +12,13 @@ export const dataSourcesInfo = {
     "dataSourceType": "Dataverse",
     "apis": {}
   },
+  "dyn365bc_prodorderroutinglines_abk_prod_v1_0": {
+    "tableId": "",
+    "version": "",
+    "primaryKey": "dyn365bc_prodorderroutingline_abk_prod_v1_0id",
+    "dataSourceType": "Dataverse",
+    "apis": {}
+  },
   "dyn365bc_productionorders_abk_prod_v1_0": {
     "tableId": "",
     "version": "",
