@@ -46,6 +46,7 @@ type Column = {
   numeric?: boolean
   date?: boolean
   wrap?: boolean
+  width?: string
   render?: (row: ProductionOrder) => string
 }
 
@@ -55,7 +56,7 @@ const COLUMNS: Column[] = [
   { key: "dyn365bc_workcenter", label: "Work Center" },
   { key: "dyn365bc_duedate", label: "Due Date", date: true },
   { key: "dyn365bc_no", label: "No." },
-  { key: "dyn365bc_description", label: "Description", wrap: true },
+  { key: "dyn365bc_description", label: "Description", wrap: true, width: "w-[20%]" },
   {
     key: "dyn365bc_statusname",
     label: "Status",
@@ -148,9 +149,7 @@ export default function ProdOrdersPage() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">Production orders</h1>
-          <p className="text-sm text-muted-foreground">
-            Production Order (5405) · Dataverse virtual table <code>abk/prod/v1.0</code>
-          </p>
+          
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -230,27 +229,27 @@ export default function ProdOrdersPage() {
             (rows.length === 0 ? (
               <p className="text-sm text-muted-foreground">No rows returned.</p>
             ) : (
-              <Table className="min-w-max">
+              <Table className="w-full table-fixed">
                 <TableHeader className="sticky top-0 z-10 bg-card">
                   <TableRow>
                     {COLUMNS.map((c) => {
                       const active = sort?.key === c.key
                       return (
-                        <TableHead key={String(c.key)} className="whitespace-nowrap p-0">
+                        <TableHead key={String(c.key)} className={`p-0 ${c.width ?? ""}`}>
                           <button
                             type="button"
                             onClick={() => toggleSort(c.key)}
-                            className="flex w-full items-center gap-1 px-2 py-2 text-left font-medium hover:text-foreground"
+                            className="flex w-full min-w-0 items-center gap-1 px-2 py-2 text-left font-medium hover:text-foreground"
                           >
-                            {c.label}
+                            <span className="break-words">{c.label}</span>
                             {active ? (
                               sort?.dir === "asc" ? (
-                                <ArrowUp className="size-3.5" />
+                                <ArrowUp className="size-3.5 shrink-0" />
                               ) : (
-                                <ArrowDown className="size-3.5" />
+                                <ArrowDown className="size-3.5 shrink-0" />
                               )
                             ) : (
-                              <ChevronsUpDown className="size-3.5 opacity-40" />
+                              <ChevronsUpDown className="size-3.5 shrink-0 opacity-40" />
                             )}
                           </button>
                         </TableHead>
@@ -259,7 +258,7 @@ export default function ProdOrdersPage() {
                   </TableRow>
                   <TableRow>
                     {COLUMNS.map((c) => (
-                      <TableHead key={String(c.key)} className="p-1">
+                      <TableHead key={String(c.key)} className={`p-1 ${c.width ?? ""}`}>
                         <Input
                           value={columnFilters[c.key as string] ?? ""}
                           onChange={(e) =>
@@ -269,7 +268,7 @@ export default function ProdOrdersPage() {
                             }))
                           }
                           placeholder="Filter…"
-                          className="h-7 text-xs font-normal"
+                          className="h-7 text-xs font-normal w-full min-w-0 px-2"
                         />
                       </TableHead>
                     ))}
@@ -281,11 +280,7 @@ export default function ProdOrdersPage() {
                       {COLUMNS.map((c) => (
                         <TableCell
                           key={String(c.key)}
-                          className={
-                            c.wrap
-                              ? "min-w-[280px] max-w-[420px] whitespace-normal break-words align-top"
-                              : "max-w-[280px] truncate"
-                          }
+                          className="whitespace-normal break-words align-top"
                         >
                           {c.key === "dyn365bc_no" ? (
                             <Link

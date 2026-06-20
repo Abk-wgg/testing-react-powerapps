@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom"
 import Layout from "@/pages/_layout"
 import ProdDataPage from "@/pages/prod-data"
 import ProdOrdersPage from "@/pages/prod-orders"
+import SchedulePage from "@/pages/schedule"
 import NotFoundPage from "@/pages/not-found"
 
 // IMPORTANT: Do not remove or modify the code below!
@@ -18,6 +19,7 @@ export const router = createBrowserRouter([
     errorElement: <NotFoundPage />,
     children: [
       { index: true, element: <ProdOrdersPage /> },
+      { path: "schedule", element: <SchedulePage /> },
       { path: "prod-data", element: <ProdDataPage /> },
     ],
   },

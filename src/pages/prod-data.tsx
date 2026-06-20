@@ -46,6 +46,8 @@ type Column = {
   numeric?: boolean
   date?: boolean
   wrap?: boolean
+  narrow?: boolean
+  width?: string
   render?: (row: ProdOrderComponent) => string
 }
 
@@ -58,13 +60,14 @@ const COLUMNS: Column[] = [
   { key: "dyn365bc_prodorderno", label: "Prod. Order No." },
   {
     key: "dyn365bc_lineno",
-    label: "Comp. Line",
+    label: "Line",
     numeric: true,
+    narrow: true,
     render: (row) =>
       row.dyn365bc_lineno != null ? String(row.dyn365bc_lineno / 10000) : "",
   },
   { key: "dyn365bc_itemno", label: "Item No." },
-  { key: "dyn365bc_description", label: "Description", wrap: true },
+  { key: "dyn365bc_description", label: "Description", wrap: true, width: "w-[22%]" },
   {
     key: "dyn365bc_statusname",
     label: "Status",
@@ -132,14 +135,32 @@ export default function ProdDataPage() {
   }, [rows, filter, columnFilters])
 
   const sortedRows = useMemo(() => {
-    if (!sort) return filteredRows
-    const col = COLUMNS.find((c) => c.key === sort.key)
-    if (!col) return filteredRows
-    const factor = sort.dir === "asc" ? 1 : -1
-    return [...filteredRows].sort((a, b) => compareRows(col, a, b) * factor)
+    if (sort) {
+      const col = COLUMNS.find((c) => c.key === sort.key)
+      if (!col) return filteredRows
+      const factor = sort.dir === "asc" ? 1 : -1
+      return [...filteredRows].sort((a, b) => compareRows(col, a, b) * factor)
+    }
+    // Default order: group by production order, with RTV components first within
+    // each order, then by component line no.
+    return [...filteredRows].sort((a, b) => {
+      const orderCmp = (a.dyn365bc_prodorderno ?? "").localeCompare(
+        b.dyn365bc_prodorderno ?? "",
+        undefined,
+        { numeric: true, sensitivity: "base" },
+      )
+      if (orderCmp !== 0) return orderCmp
+      const rtvCmp = (isRtv(a) ? 0 : 1) - (isRtv(b) ? 0 : 1)
+      if (rtvCmp !== 0) return rtvCmp
+      return (a.dyn365bc_lineno ?? 0) - (b.dyn365bc_lineno ?? 0)
+    })
   }, [filteredRows, sort])
 
   const hasColumnFilters = Object.values(columnFilters).some((v) => v.trim() !== "")
+
+  function rowClass(row: ProdOrderComponent): string {
+    return isRtv(row) ? "bg-primary/15 hover:bg-primary/25" : ""
+  }
 
   function toggleSort(key: keyof ProdOrderComponent) {
     setSort((prev) => {
@@ -154,9 +175,7 @@ export default function ProdDataPage() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">Component list</h1>
-          <p className="text-sm text-muted-foreground">
-            Prod. Order Components · Dataverse virtual table <code>abk/prod/v1.0</code>
-          </p>
+         
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -236,27 +255,30 @@ export default function ProdDataPage() {
             (rows.length === 0 ? (
               <p className="text-sm text-muted-foreground">No rows returned.</p>
             ) : (
-              <Table className="min-w-max">
+              <Table className="w-full table-fixed">
                 <TableHeader className="sticky top-0 z-10 bg-card">
                   <TableRow>
                     {COLUMNS.map((c) => {
                       const active = sort?.key === c.key
                       return (
-                        <TableHead key={String(c.key)} className="whitespace-nowrap p-0">
+                        <TableHead
+                          key={String(c.key)}
+                          className={`p-0 ${c.narrow ? "w-14" : c.width ?? ""}`}
+                        >
                           <button
                             type="button"
                             onClick={() => toggleSort(c.key)}
-                            className="flex w-full items-center gap-1 px-2 py-2 text-left font-medium hover:text-foreground"
+                            className="flex w-full min-w-0 items-center gap-1 px-2 py-2 text-left font-medium hover:text-foreground"
                           >
-                            {c.label}
+                            <span className="break-words">{c.label}</span>
                             {active ? (
                               sort?.dir === "asc" ? (
-                                <ArrowUp className="size-3.5" />
+                                <ArrowUp className="size-3.5 shrink-0" />
                               ) : (
-                                <ArrowDown className="size-3.5" />
+                                <ArrowDown className="size-3.5 shrink-0" />
                               )
                             ) : (
-                              <ChevronsUpDown className="size-3.5 opacity-40" />
+                              <ChevronsUpDown className="size-3.5 shrink-0 opacity-40" />
                             )}
                           </button>
                         </TableHead>
@@ -265,7 +287,10 @@ export default function ProdDataPage() {
                   </TableRow>
                   <TableRow>
                     {COLUMNS.map((c) => (
-                      <TableHead key={String(c.key)} className="p-1">
+                      <TableHead
+                        key={String(c.key)}
+                        className={`p-1 ${c.narrow ? "w-14" : c.width ?? ""}`}
+                      >
                         <Input
                           value={columnFilters[c.key as string] ?? ""}
                           onChange={(e) =>
@@ -274,8 +299,8 @@ export default function ProdDataPage() {
                               [c.key as string]: e.target.value,
                             }))
                           }
-                          placeholder="Filter…"
-                          className="h-7 text-xs font-normal"
+                          placeholder={c.narrow ? "" : "Filter…"}
+                          className="h-7 text-xs font-normal w-full min-w-0 px-2"
                         />
                       </TableHead>
                     ))}
@@ -283,15 +308,14 @@ export default function ProdDataPage() {
                 </TableHeader>
                 <TableBody>
                   {sortedRows.map((row, i) => (
-                    <TableRow key={row.dyn365bc_prodordercomponent_abk_prod_v1_0id ?? i}>
+                    <TableRow
+                      key={row.dyn365bc_prodordercomponent_abk_prod_v1_0id ?? i}
+                      className={rowClass(row)}
+                    >
                       {COLUMNS.map((c) => (
                         <TableCell
                           key={String(c.key)}
-                          className={
-                            c.wrap
-                              ? "min-w-[280px] max-w-[420px] whitespace-normal break-words align-top"
-                              : "max-w-[280px] truncate"
-                          }
+                          className="whitespace-normal break-words align-top"
                         >
                           {c.key === "dyn365bc_prodorderno" ? (
                             <Link
@@ -329,6 +353,10 @@ function compareRows(column: Column, a: ProdOrderComponent, b: ProdOrderComponen
     numeric: true,
     sensitivity: "base",
   })
+}
+
+function isRtv(row: ProdOrderComponent): boolean {
+  return (row.dyn365bc_itemno ?? "").toUpperCase().startsWith("RTV")
 }
 
 function cellText(column: Column, row: ProdOrderComponent): string {
