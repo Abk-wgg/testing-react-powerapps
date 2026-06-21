@@ -3,6 +3,8 @@ import { Link, useSearchParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { format, parseISO } from "date-fns"
 import { ArrowDown, ArrowUp, ChevronsUpDown, Download, X } from "lucide-react"
+import { exportRowsToExcel } from "@/lib/export-excel"
+import { useIsAppAdmin } from "@/hooks/use-app-admin"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -97,6 +99,8 @@ export default function ProdOrdersPage() {
   const [columnFilters, setColumnFilters] = useState<Record<string, string>>({})
   const [sort, setSort] = useState<SortState | null>(null)
   const [releasedOnly, setReleasedOnly] = useState(true)
+  // Only app_admin users may download (Excel export).
+  const { isAdmin } = useIsAppAdmin()
 
   // Routing lines give us the work center per order (excluding "PRINTING").
   const routingQuery = useQuery({
@@ -169,8 +173,17 @@ export default function ProdOrdersPage() {
           <Button
             variant="outline"
             size="sm"
-            disabled
-            title="Excel export is temporarily disabled"
+            disabled={!isAdmin || sortedRows.length === 0}
+            title={isAdmin ? undefined : "Only app admins can download"}
+            onClick={() =>
+              exportRowsToExcel(
+                "production-orders",
+                "Production orders",
+                COLUMNS,
+                sortedRows,
+                cellText,
+              )
+            }
           >
             <Download className="size-4" />
             Export to Excel

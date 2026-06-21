@@ -25,5 +25,12 @@ export const dataSourcesInfo = {
     "primaryKey": "dyn365bc_productionorder_abk_prod_v1_0id",
     "dataSourceType": "Dataverse",
     "apis": {}
+  },
+  "systemusers": {
+    "tableId": "",
+    "version": "",
+    "primaryKey": "systemuserid",
+    "dataSourceType": "Dataverse",
+    "apis": {}
   }
 };

@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react"
 import { Outlet, NavLink, useLocation } from "react-router-dom"
+import { ShieldAlert } from "lucide-react"
+import { useAccessControl } from "@/hooks/use-app-admin"
 
 type LayoutProps = { showHeader?: boolean }
 
@@ -24,6 +26,32 @@ function pageAccent(pathname: string): string {
 
 export default function Layout({ showHeader = true }: LayoutProps) {
   const location = useLocation()
+  const { hasAccess, isLoading } = useAccessControl()
+
+  // Gate the whole app on holding an access role (app_admin or app_viewer).
+  if (isLoading) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center">
+        <p className="text-sm text-muted-foreground animate-pulse">Checking access…</p>
+      </div>
+    )
+  }
+  if (!hasAccess) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center p-6">
+        <div className="max-w-md text-center space-y-3">
+          <ShieldAlert className="mx-auto size-12 text-destructive" />
+          <h1 className="text-xl font-semibold">Access denied</h1>
+          <p className="text-sm text-muted-foreground">
+            You don't have permission to use this app. Please contact{" "}
+            <span className="font-medium text-foreground">Abhishek Kohli</span> to
+            request access.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   const accent = pageAccent(location.pathname)
   // Tint the dark surfaces with the page accent so each page has its own theme.
   const tintedBg = `color-mix(in oklab, ${accent} 24%, #22223b)`

@@ -25,6 +25,11 @@
         "prodorderroutingline": {
           "entitySetName": "dyn365bc_prodorderroutinglines_abk_prod_v1_0",
           "logicalName": "dyn365bc_prodorderroutingline_abk_prod_v1_0"
+        },
+        "users": {
+          "entitySetName": "systemusers",
+          "logicalName": "systemuser",
+          "isHidden": false
         }
       },
       "environmentVariableName": ""

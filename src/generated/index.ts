@@ -8,8 +8,10 @@ export * as CommonModels from './models/CommonModels';
 export * as Dyn365bc_prodordercomponents_abk_prod_v1_0Model from './models/Dyn365bc_prodordercomponents_abk_prod_v1_0Model';
 export * as Dyn365bc_prodorderroutinglines_abk_prod_v1_0Model from './models/Dyn365bc_prodorderroutinglines_abk_prod_v1_0Model';
 export * as Dyn365bc_productionorders_abk_prod_v1_0Model from './models/Dyn365bc_productionorders_abk_prod_v1_0Model';
+export * as SystemusersModel from './models/SystemusersModel';
 
 // Services
 export * from './services/Dyn365bc_prodordercomponents_abk_prod_v1_0Service';
 export * from './services/Dyn365bc_prodorderroutinglines_abk_prod_v1_0Service';
 export * from './services/Dyn365bc_productionorders_abk_prod_v1_0Service';
+export * from './services/SystemusersService';
